@@ -198,6 +198,8 @@ source "drivers/hwtracing/intel_th/Kconfig"
 
 source "drivers/fpga/Kconfig"
 
+source "drivers/smaf/Kconfig"
+
 source "drivers/tee/Kconfig"
 
 endmenu
