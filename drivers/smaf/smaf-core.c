@@ -426,7 +426,8 @@ static void smaf_dma_buf_release(struct dma_buf *dmabuf)
    kfree(handle);
 }
 
-static int smaf_dma_buf_begin_cpu_access(struct dma_buf *dmabuf,
+static int smaf_dma_buf_begin_cpu_access(struct dma_buf *dmabuf, size_t start,
+                    size_t len,
                     enum dma_data_direction dir)
 {
    struct smaf_handle *handle = dmabuf->priv;
@@ -443,19 +444,20 @@ static int smaf_dma_buf_begin_cpu_access(struct dma_buf *dmabuf,
    if (!ret)
        return -EINVAL;
 
-   return dma_buf_begin_cpu_access(handle->db_alloc, dir);
+   return dma_buf_begin_cpu_access(handle->db_alloc, start, len, dir);
 }
 
-static int smaf_dma_buf_end_cpu_access(struct dma_buf *dmabuf,
+static int smaf_dma_buf_end_cpu_access(struct dma_buf *dmabuf, size_t start,
+                      size_t len,
                       enum dma_data_direction dir)
 {
    struct smaf_handle *handle = dmabuf->priv;
-   int ret;
+   int ret = 0;
 
    if (!handle->db_alloc)
        return -EINVAL;
 
-   ret = dma_buf_end_cpu_access(handle->db_alloc, dir);
+   dma_buf_end_cpu_access(handle->db_alloc, start, len, dir);
 
    mutex_lock(&smaf_dev.lock);
    smaf_revoke_access(handle, get_cpu_device(0), 0, handle->length, dir);
